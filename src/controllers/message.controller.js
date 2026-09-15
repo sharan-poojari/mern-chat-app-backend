@@ -53,7 +53,6 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    // Socket.io real-time part - Day 2 mein add karenge
 
     res.status(201).json(newMessage);
   } catch (error) {
