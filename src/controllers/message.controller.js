@@ -36,11 +36,26 @@ export const getMessages = async (req, res) => {
 export const sendMessage = async (req, res) => {
   try {
     const { text, image } = req.body;
+    if (text && text.trim().length === 0 && !image) {
+      return res.status(400).json({ message: "Message cannot be empty" });
+    }
+    if (text && text.length > 1000) {
+      return res.status(400).json({ message: "Message is too long" });
+    }
     const { id: receiverId } = req.params;
+    if (!receiverId) {
+      return res.status(400).json({ message: "Receiver ID is required" });
+    }
     const senderId = req.user._id;
 
     let imageUrl;
     if (image) {
+      if (!image.startsWith("data:image/")) {
+        return res.status(400).json({ message: "Only image files are allowed" });
+      }
+      if (image.length > 5 * 1024 * 1024) {
+        return res.status(400).json({ message: "Image is too large" });
+      }
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
@@ -54,7 +69,7 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-      const receiverSocketId = getReceiverSocketId(receiverId);
+    const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
@@ -62,6 +77,8 @@ export const sendMessage = async (req, res) => {
     res.status(201).json(newMessage);
   } catch (error) {
     console.log("Error in sendMessage controller:", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({
+      message: "Something went wrong while sending the message",
+    });
   }
 };

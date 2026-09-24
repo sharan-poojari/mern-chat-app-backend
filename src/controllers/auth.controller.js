@@ -9,6 +9,9 @@ export const signup = async (req, res) => {
     if (!fullName || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
+    if (!email.includes("@")) {
+      return res.status(400).json({ message: "Please enter a valid email" });
+    }
     if (password.length < 6) {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
@@ -42,6 +45,12 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+  if (!email.includes("@")) {
+    return res.status(400).json({ message: "Please enter a valid email" });
+  }
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
