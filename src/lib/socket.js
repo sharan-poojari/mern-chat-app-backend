@@ -34,7 +34,6 @@ io.use((socket, next) => {
   }
 });
 
-
 const userSocketMap = {};
 
 export function getReceiverSocketId(userId) {
@@ -45,14 +44,36 @@ io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
   const userId = socket.userId;
-  if (userId) userSocketMap[userId] = socket.id;
 
+  if (userId) {
+    userSocketMap[userId] = socket.id;
+  }
 
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
+  // User started typing
+  socket.on("typing", (receiverId) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("userTyping", userId);
+    }
+  });
+
+  // User stopped typing
+  socket.on("stopTyping", (receiverId) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("userStoppedTyping", userId);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("A user disconnected:", socket.id);
+
     delete userSocketMap[userId];
+
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
