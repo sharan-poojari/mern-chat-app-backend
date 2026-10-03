@@ -72,7 +72,11 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected:", socket.id);
 
-    delete userSocketMap[userId];
+    // Only remove the user if this socket
+    // is still the active socket for that user.
+    if (userSocketMap[userId] === socket.id) {
+      delete userSocketMap[userId];
+    }
 
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
