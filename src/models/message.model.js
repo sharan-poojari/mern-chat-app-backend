@@ -31,6 +31,10 @@ const messageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Faster chat history queries
+messageSchema.index({ senderId: 1, receiverId: 1, createdAt: -1 });
+messageSchema.index({ receiverId: 1, senderId: 1, createdAt: -1 });
+
 const Message = mongoose.model("Message", messageSchema);
 
 export default Message;

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
-
+import connectionRoutes from "./routes/connection.route.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import { connectDB } from "./lib/db.js";
@@ -30,6 +30,7 @@ app.use(apiLimiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/connections", connectionRoutes);
 
 server.listen(PORT, () => {
   console.log(`Server running on PORT: ${PORT}`);

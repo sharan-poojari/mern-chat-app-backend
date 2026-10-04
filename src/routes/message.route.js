@@ -6,16 +6,45 @@ import {
   sendMessage,
   markMessagesAsRead,
   editMessage,
-  deleteMessage
+  deleteMessage,
 } from "../controllers/message.controller.js";
 
 const router = express.Router();
 
-router.get("/users", protectRoute, getUsersForSidebar);
-router.get("/:id", protectRoute, getMessages);
-router.post("/send/:id", protectRoute, sendMessage);
-router.put("/read/:id", protectRoute, markMessagesAsRead);
-router.put("/edit/:id", protectRoute, editMessage);
-router.delete("/:id", protectRoute, deleteMessage);
+router.get(
+  "/users",
+  protectRoute,
+  getUsersForSidebar
+);
+
+router.get(
+  "/:id",
+  protectRoute,
+  getMessages
+);
+
+router.post(
+  "/send/:id",
+  protectRoute,
+  sendMessage
+);
+
+router.put(
+  "/read/:id",
+  protectRoute,
+  markMessagesAsRead
+);
+
+router.put(
+  "/edit/:id",
+  protectRoute,
+  editMessage
+);
+
+router.delete(
+  "/:id",
+  protectRoute,
+  deleteMessage
+);
 
 export default router;
