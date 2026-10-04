@@ -6,11 +6,11 @@ import { getReceiverSocketId, io } from "../lib/socket.js";
 
 /*
 |--------------------------------------------------------------------------
-| Helper: Get connection between two users
+| Helper: Check whether two users have an accepted connection
 |--------------------------------------------------------------------------
 */
-const getConnectionBetweenUsers = async (userId, otherUserId) => {
-  return Connection.findOne({
+const isCommunicationAllowed = async (userId, otherUserId) => {
+  const connection = await Connection.findOne({
     $or: [
       {
         requesterId: userId,
@@ -21,25 +21,10 @@ const getConnectionBetweenUsers = async (userId, otherUserId) => {
         recipientId: userId,
       },
     ],
+    status: "accepted",
   });
-};
 
-/*
-|--------------------------------------------------------------------------
-| Helper: Check whether two users are allowed to communicate
-|--------------------------------------------------------------------------
-*/
-const isCommunicationAllowed = async (userId, otherUserId) => {
-  const connection = await getConnectionBetweenUsers(
-    userId,
-    otherUserId
-  );
-
-  if (!connection) {
-    return false;
-  }
-
-  return connection.status === "accepted";
+  return !!connection;
 };
 
 /*
